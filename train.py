@@ -11,25 +11,21 @@ class LyricsDataset(Dataset):
         self.data = []
         for text in texts:
             tokens = tokenizer.encode(text)
-            # chunk tokens into sequences
             for i in range(0, len(tokens) - seq_len):
-                self.data.append(tokens[i:i+seq_len+1])  # input + target token
+                self.data.append(tokens[i:i+seq_len+1])
 
     def __len__(self):
         return len(self.data)
 
     def __getitem__(self, idx):
         seq = self.data[idx]
-        input_seq = torch.tensor(seq[:-1], dtype=torch.long)
-        target_seq = torch.tensor(seq[1:], dtype=torch.long)
-        return input_seq, target_seq
+        return torch.tensor(seq[:-1], dtype=torch.long), torch.tensor(seq[1:], dtype=torch.long)
 
 def train():
-    # Sample training texts - replace with your own lyrics
     texts = [
         "My lines are mixed carving outlines they carry every hit",
         "Butterflies watching eyes fold secrets in the wings",
-        # Add more of your data here
+        # Add more of your own writing here
     ]
 
     tokenizer = SimpleTokenizer()
@@ -43,7 +39,7 @@ def train():
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
 
     model.train()
-    for epoch in range(10):  # Increase epochs for real training
+    for epoch in range(10):
         total_loss = 0
         for inputs, targets in dataloader:
             optimizer.zero_grad()
@@ -52,7 +48,9 @@ def train():
             loss.backward()
             optimizer.step()
             total_loss += loss.item()
-        print(f"Epoch {epoch+1} Loss: {total_loss/len(dataloader):.4f}")
+        print(f"Epoch {epoch+1} Loss: {total_loss / len(dataloader):.4f}")
+
+    torch.save(model.state_dict(), "minigpt_trained.pth")
 
 if __name__ == "__main__":
     train()
