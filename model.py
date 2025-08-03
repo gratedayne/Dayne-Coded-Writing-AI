@@ -14,7 +14,6 @@ class SimpleTransformerBlock(nn.Module):
         self.ln2 = nn.LayerNorm(embed_dim)
 
     def forward(self, x):
-        # x shape: (seq_len, batch_size, embed_dim)
         attn_out, _ = self.attn(x, x, x)
         x = self.ln1(x + attn_out)
         ff_out = self.ff(x)
@@ -35,18 +34,13 @@ class MiniGPT(nn.Module):
 
     def forward(self, idx):
         batch_size, seq_len = idx.size()
-        tok_emb = self.token_embedding(idx)  # (batch_size, seq_len, embed_dim)
-        pos_emb = self.position_embedding[:seq_len, :].unsqueeze(0)  # (1, seq_len, embed_dim)
+        tok_emb = self.token_embedding(idx)
+        pos_emb = self.position_embedding[:seq_len, :].unsqueeze(0)
         x = tok_emb + pos_emb
-        x = x.transpose(0, 1)  # (seq_len, batch_size, embed_dim)
-
+        x = x.transpose(0, 1)
         for layer in self.layers:
             x = layer(x)
-
-        x = x.transpose(0, 1)  # (batch_size, seq_len, embed_dim)
+        x = x.transpose(0, 1)
         x = self.ln_f(x)
-        logits = self.head(x)  # (batch_size, seq_len, vocab_size)
+        logits = self.head(x)
         return logits
-
-if __name__ == "__main__":
-    print("MiniGPT model defined.")
