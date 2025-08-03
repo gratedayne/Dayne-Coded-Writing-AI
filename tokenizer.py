@@ -8,7 +8,7 @@ class SimpleTokenizer:
         for text in texts:
             tokens.update(text.split())
         tokens = sorted(tokens)
-        self.vocab = {tok: i for i, tok in enumerate(tokens, start=1)}  # reserve 0 for padding
+        self.vocab = {tok: i for i, tok in enumerate(tokens, start=1)}  # 0 reserved for padding
         self.inv_vocab = {i: tok for tok, i in self.vocab.items()}
 
     def encode(self, text):
